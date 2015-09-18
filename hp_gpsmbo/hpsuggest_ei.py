@@ -115,16 +115,18 @@ class DomainGP_EI(DomainGP):
         fs = []
         dfs = []
         for ii, pp in enumerate(gpr._params_list):
-            #print 'pp', pp, 'x', X
+            print 'pp', pp, 'x', X
             f, df = self._cost_deriv(np.atleast_2d(X),
                                      self._EI_thresh,
                                      pp,
                                      self._cost_deriv_reuse_cholesky,
                                      ii)
+            print "f", f
+            print "df", df
             assert f.shape == (1,), (f.shape, X.shape)
             fs.append(f[0])
             dfs.append(df.flatten())
-        self._cost_deriv_reuse_cholesky = 1
+        self._cost_deriv_reuse_cholesky = 0 # 1
         mean_f = np.dot(gpr._params_weights, fs)
         #import pdb; pdb.set_trace()
         mean_df = np.dot(gpr._params_weights, np.asarray(dfs))
@@ -204,7 +206,8 @@ def suggest(new_ids, domain, trials, seed,
     t1 = time.time()
     print 'optimizing surrogate took', (t1 - t0)
     if plot_contours:
-        plot_contours(dgp, 2, dgp._lbound, best_pt)
+        # plot_contours(dgp, 2, dgp._lbound, best_pt)
+        plot_contours(dgp, 2, best_pt)
     new_id, = new_ids
     #print 'REI: Best pt', best_pt
     return SuggestBest(domain, trials, seed, best_pt)(new_id)
